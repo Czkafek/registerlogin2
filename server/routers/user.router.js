@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const User = require('../models/user.model.js');
+const userValidation = require("../validation/user.validation.js");
+const userLoginValidation = require("../validation/login.validation.js");
+const checkValidation = require("../validation/check.validation.js");
 
 router.get('/users', async (req, res) => { 
     try {
@@ -11,7 +14,7 @@ router.get('/users', async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', userValidation, checkValidation, async (req, res) => {
     try {
         const isTaken = await User.find( {$or: [{ username: req.body.username }, {email: req.body.email}]});
         if(isTaken.length > 0) return res.status(409).json({ error: "Username or email already taken"});
@@ -22,7 +25,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', userLoginValidation, checkValidation, async (req, res) => {
     try {
         const user = await User.findOne({ username: req.body.username, email: req.body.email});
         if(!user) return res.status(404).json({ error: "Wrong username or email"});

@@ -2,7 +2,7 @@ const { sign } = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
 
-const createAccesToken  = userId => {
+const createAccessToken  = userId => {
     return sign({ userId }, fs.readFileSync(path.join(__dirname, '../priv.pem'), 'utf-8'), {
         algorithm: 'RS256',
         expiresIn: '1m' // W celach testowych
@@ -16,4 +16,4 @@ const createRefreshToken = userId => {
     });
 }
 
-module.exports = { createAccesToken, createRefreshToken };
+module.exports = { createAccessToken, createRefreshToken };

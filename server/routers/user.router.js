@@ -42,7 +42,7 @@ router.post('/login', userLoginValidation, checkValidation, async (req, res) => 
         await user.save();
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            maxAge: 15 * 50 * 1000,
+            maxAge: 15 * 60 * 1000,
             path: '/'
         });
         res.status(200).json({ accessToken, message: "User has been successfully logged in" });
@@ -52,20 +52,48 @@ router.post('/login', userLoginValidation, checkValidation, async (req, res) => 
 });
 
 router.get('/protected', async (req, res) => {
-    const accessToken = req.headers['authorization']?.split(' ')[1]; // '?' sprawia, że jeśli nie ma 'authorization' to nie wywali błędu
-    if(!accessToken) {
-        const refreshToken = req.cookies.refreshToken;
-        if(!refreshToken) return res.status(401).json({ error: "Unauthorized" });
-        const payload = verify(refreshToken, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
-        if(!payload) { // refresh token is expired
-            // clear cookies
-            // return status 401 and error so frontend redirects uesr to proper page
-        }
-        // if payload is alright then check if there is a user with id from it, then check if refresh tokens match if they do then make a new refreshtoken and accesstoken and return 201
-    } else if (!verify(accessToken, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'))) {
-        // basicly the same
-    } 
-    // accesstoken is alright so return the status 200 with data
+    try {
+        const accessToken = req.headers['authorization']?.split(' ')[1]; // '?' sprawia, że jeśli nie ma 'authorization' to nie wywali błędu
+        if(!accessToken) return res.status(401).json({ error: "Unauthorized - missing token" });
+        const payload = verify(accessToken, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
+        if(!payload) return res.status(401).json({ error: "Unauthorized - invalid token" });
+        const users = await User.find();
+        return res.status(200).json(users);
+    } catch (err) {
+        console.error("Error in /protected endpoint: ", err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.post('/refresh_token', async (req, res) => {
+    try {
+        const token = req.cookies.refreshToken;
+        console.log(token);
+        if(!token) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
+        const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
+        if(!payload) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
+        const user = await User.findOne({ _id: payload.id });
+        if(!user || token !== user.refreshToken) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
+        const accessToken = createAccessToken(user._id);
+        const newRefreshToken = createRefreshToken(user._id);
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            maxAge: 15 * 60 * 1000,
+            path: '/'
+        });
+        return res.status(200).json({ accessToken });
+    } catch(err) {
+        console.error("Error in /refresh_token endpoint: ", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.post('/logout', (req, res) => {
+    try {
+        return res.clearCookie("refreshToken").status(200).json({ message: 'Logged out' });
+    } catch (err) {
+        return res.status(500).json({ message: "Logout failed" });
+    }
 })
 
 

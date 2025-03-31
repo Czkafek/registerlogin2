@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const User = require('../models/user.model.js');
 const userValidation = require("../validation/user.validation.js");
 const userLoginValidation = require("../validation/login.validation.js");
@@ -68,14 +69,15 @@ router.get('/protected', async (req, res) => {
 router.post('/refresh_token', async (req, res) => {
     try {
         const token = req.cookies.refreshToken;
-        console.log(token);
-        if(!token) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
+        if(!token) return res.clearCookie("refreshToken").status(401).json({ err: "No token", accessToken: '' });
         const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
-        if(!payload) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
-        const user = await User.findOne({ _id: payload.id });
-        if(!user || token !== user.refreshToken) return res.clearCookie("refreshToken").status(401).json({ accessToken: '' });
+        if(!payload) return res.clearCookie("refreshToken").status(401).json({ err: "Verify", accessToken: '' });
+        const user = await User.findById(payload.userId);
+        if(token !== user.refreshToken) return res.clearCookie("refreshToken").status(401).json({ err: "Db", accessToken: '' });
         const accessToken = createAccessToken(user._id);
         const newRefreshToken = createRefreshToken(user._id);
+        user.refreshToken = newRefreshToken;
+        await user.save();
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             maxAge: 15 * 60 * 1000,

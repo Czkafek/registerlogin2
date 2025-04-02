@@ -1,0 +1,40 @@
+form {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
+input {
+    width: 100%;
+    font-size: 20px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+p {
+    margin: 8px 0px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+button {
+    font-size: 20px;
+    padding: 8px 0px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #000;
+}
+
+.question {
+    font-size: 16px;
+    font-weight: 400;
+    color: #131fbb;
+    text-decoration: underline;
+}
+
+.error {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #bd1c1c;
+}

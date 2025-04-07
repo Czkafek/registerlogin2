@@ -2,13 +2,24 @@ form {
     display: flex;
     flex-direction: column;
     width: 500px;
+    color: #181818;
 }
 
 input {
     width: 100%;
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 8px;
     box-sizing: border-box;
+    border: none;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    padding: 8px 12px;
+    outline-color: #f0f0f0;
+    color: #181818;
+}
+input::placeholder {
+    color: #cacaca;
+    font-weight: 200;
 }
 
 p {
@@ -18,23 +29,40 @@ p {
 }
 
 button {
+    margin-top: 16px;
     font-size: 20px;
     padding: 8px 0px;
     border: none;
     border-radius: 6px;
-    color: #fff;
-    background-color: #000;
+    color: #ffffff;
+    background-color: #181818;
+    transition: opacity 0.1s;
+}
+button:hover {
+    opacity: 0.9;
+}
+button:active {
+    opacity: 0.7;
 }
 
 .question {
+    margin-top: 16px;
     font-size: 16px;
     font-weight: 400;
     color: #131fbb;
     text-decoration: underline;
+    text-align: center;
 }
 
 .error {
-    margin-top: 16px;
     font-size: 16px;
     color: #bd1c1c;
+    text-align: center;
+}
+
+.container {
+    padding-top: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

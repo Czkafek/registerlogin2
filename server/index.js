@@ -9,6 +9,11 @@ const DB_URI = 'mongodb://localhost:27017/registerlogin2';
 const User = require('./models/user.model');
 const UserRouter = require('./routers/user.router');
 
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE'
+}
+
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());

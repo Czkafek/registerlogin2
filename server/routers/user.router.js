@@ -20,6 +20,14 @@ router.get('/users', async (req, res) => {
     }
 });
 
+router.get('/register', async (req, res) => {
+    /*
+    Przed tym jak dojdzie tutaj zapytanie odwiedzony musi zostać route '/refresh_token'
+    Sprawdza czy access token istnieje
+    Sprawdza czy access token jest aktywny
+    */
+})
+
 router.post('/register', userValidation, checkValidation, async (req, res) => {
     try {
         const isTaken = await User.find( {$or: [{ username: req.body.username }, {email: req.body.email}]});

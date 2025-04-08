@@ -21,6 +21,15 @@ router.get('/users', async (req, res) => {
 });
 
 router.get('/register', async (req, res) => {
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if(!token) res.status(401).json({ error: "Unauthorized - missing token"});
+        const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
+        if(payload) res.status(200).json({ error: "Authorized - valid token"});
+        res.status(401).json({ error: "Unauthorized - invalid token" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
     /*
     Przed tym jak dojdzie tutaj zapytanie odwiedzony musi zostać route '/refresh_token'
     Sprawdza czy access token istnieje

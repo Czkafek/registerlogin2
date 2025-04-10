@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import api from '../../scripts/api.js'
 
 function RegisterPage() {
 
@@ -15,10 +16,10 @@ function RegisterPage() {
         password: '',
     });
 
-    useEffect(() => {
+   useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/register")
+                const response = await api.get("/register")
                 console.log(response);
             } catch (err) {
                 console.log(err);

@@ -11,10 +11,11 @@ const UserRouter = require('./routers/user.router');
 
 const corsOptions = {
     origin: 'http://localhost:5173',
-    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE'
+    methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+    credentials: true
 }
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", UserRouter);

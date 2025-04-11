@@ -1,8 +1,7 @@
 import styles from './LoginRegister.module.css'
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
 import api from '../../scripts/api.js'
 
 function RegisterPage() {
@@ -21,8 +20,10 @@ function RegisterPage() {
             try {
                 const response = await api.get("/register")
                 console.log(response);
+                //navigate('/protected')
             } catch (err) {
                 console.log(err);
+                setError(error);
             }
         }
         fetchData();
@@ -39,6 +40,7 @@ function RegisterPage() {
             //navigate('/login');
         } catch (err) {
             console.log(err);
+            setError(error);
         }
     }
 

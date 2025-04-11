@@ -19,23 +19,31 @@ const refresh_token = async () => {
 
 
 api.interceptors.request.use(async config => {
-const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
     if(token && jwtDecode(token).exp < new Date().getTime() / 1000) {
         const response = await refresh_token();
         if(response.status === 200) {
             const accessToken = 'Bearer ' + response.data.accessToken;
-            config.headers["Authorization"] = accessToken;
+            config.headers['Authorization'] = accessToken;
         }
     }
-    else {
+    else if(!token) {
         try {
             const response = await refresh_token();
             if(response.status === 200) {
                 const accessToken = 'Bearer ' + response.data.accessToken;
-                config.headers["Authorization"] = accessToken;
+                config.headers['Authorization'] = accessToken;
             }
         } catch (err) {
             console.error("Nie udało się odświeżyć tokena: ", error);
+        }
+    }
+    else {
+        try {
+                const accessToken = 'Bearer ' + token;
+                config.headers['Authorization'] = accessToken;
+        } catch (err) {
+            console.error("Nie udało się odświeżyć tokena: ", err);
         }
     }
     return config;

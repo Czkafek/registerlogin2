@@ -28,7 +28,7 @@ function LoginPage() {
             const response = await axios.post('http://localhost:3000/login', {
                 login: formData.login,
                 password: formData.password
-            });
+            }, {withCredentials: true});
             console.log(response);
             localStorage.setItem("accessToken", response.data.accessToken)
             //navigate('/protected');

@@ -54,9 +54,7 @@ router.post('/login', userLoginValidation, checkValidation, async (req, res) => 
         user.refreshToken = refreshToken;
         await user.save();
         res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            maxAge: 15 * 60 * 1000,
-            path: '/'
+            maxAge: 15 * 60 * 1000
         });
         res.status(200).json({ accessToken, message: "User has been successfully logged in" });
     } catch (err) {
@@ -81,7 +79,7 @@ router.get('/protected', async (req, res) => {
 router.post('/refresh_token', async (req, res) => {
     try {
         const token = req.cookies.refreshToken;
-        console.log(req.cookies);
+        console.log(req.cookies.refreshToken);
         if(!token) return res.clearCookie("refreshToken").status(401).json({ err: "No token", accessToken: '' });
         const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
         if(!payload) return res.clearCookie("refreshToken").status(401).json({ err: "Verify", accessToken: '' });
@@ -96,6 +94,7 @@ router.post('/refresh_token', async (req, res) => {
             maxAge: 15 * 60 * 1000,
             path: '/'
         });
+        console.log("Hej");
         return res.status(200).json({ accessToken });
     } catch(err) {
         console.error("Error in /refresh_token endpoint: ", err);

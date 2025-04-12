@@ -30,11 +30,6 @@ router.get('/register', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-    /*
-    Przed tym jak dojdzie tutaj zapytanie odwiedzony musi zostać route '/refresh_token'
-    Sprawdza czy access token istnieje
-    Sprawdza czy access token jest aktywny
-    */
 })
 
 router.post('/register', userValidation, checkValidation, async (req, res) => {
@@ -86,6 +81,7 @@ router.get('/protected', async (req, res) => {
 router.post('/refresh_token', async (req, res) => {
     try {
         const token = req.cookies.refreshToken;
+        console.log(req.cookies);
         if(!token) return res.clearCookie("refreshToken").status(401).json({ err: "No token", accessToken: '' });
         const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
         if(!payload) return res.clearCookie("refreshToken").status(401).json({ err: "Verify", accessToken: '' });
@@ -115,5 +111,12 @@ router.post('/logout', (req, res) => {
     }
 })
 
+router.get('/cookies', (req,res) => {
+    try {
+        return res.json(req.cookies);
+    } catch (err) {
+        return res.status(500).json({ message: "Error with cookies"});
+    }
+})
 
 module.exports = router;

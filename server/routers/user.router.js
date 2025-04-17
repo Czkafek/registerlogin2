@@ -44,6 +44,18 @@ router.post('/register', userValidation, checkValidation, async (req, res) => {
     }
 });
 
+router.get('/login', async (req, res) => {
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if(!token) return res.status(401).json({ error: "Unauthorized - missing token"});
+        const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
+        if(payload) return res.status(200).json({ error: "Authorized - valid token"});
+        res.status(401).json({ error: "Unauthorized - invalid token" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
 router.post('/login', userLoginValidation, checkValidation, async (req, res) => {       
     try {
         const user = await User.findOne( {$or: [{ username: req.body.login }, {email: req.body.login}]});
@@ -79,11 +91,14 @@ router.get('/protected', async (req, res) => {
 router.post('/refresh_token', async (req, res) => {
     try {
         const token = req.cookies.refreshToken;
-        console.log(req.cookies.refreshToken);
+        //console.log(req.cookies.refreshToken);
         if(!token) return res.clearCookie("refreshToken").status(401).json({ err: "No token", accessToken: '' });
         const payload = verify(token, fs.readFileSync(path.join(__dirname, "../pub.pem"), 'utf-8'));
         if(!payload) return res.clearCookie("refreshToken").status(401).json({ err: "Verify", accessToken: '' });
         const user = await User.findById(payload.userId);
+        /*console.log("Token = " + token);
+        console.log("------------------------------------------------------------------------------------------");
+        console.log("User.refreshToken = " + user.refreshToken);*/
         if(token !== user.refreshToken) return res.clearCookie("refreshToken").status(401).json({ err: "Db", accessToken: '' });
         const accessToken = createAccessToken(user._id);
         const newRefreshToken = createRefreshToken(user._id);
@@ -94,7 +109,7 @@ router.post('/refresh_token', async (req, res) => {
             maxAge: 15 * 60 * 1000,
             path: '/'
         });
-        console.log("Hej");
+        //console.log("Hej");
         return res.status(200).json({ accessToken });
     } catch(err) {
         console.error("Error in /refresh_token endpoint: ", err);

@@ -23,7 +23,7 @@ function RegisterPage() {
                 //navigate('/protected')
             } catch (err) {
                 console.log(err);
-                setError(error);
+                setError(err.response.data.err);
             }
         }
         fetchData();
@@ -37,10 +37,10 @@ function RegisterPage() {
                 password: formData.password
             });
             console.log(response);
-            //navigate('/login');
+            //navigate('/protected');
         } catch (err) {
             console.log(err);
-            setError(error);
+            setError(err.response.data.err);
         }
     }
 
@@ -65,7 +65,7 @@ function RegisterPage() {
             <input value={formData.password} onChange={handleChange} name='password' type="text" placeholder='Password' />
             <button>Register</button>
             <Link to='/login'><p className={styles.question}>Already have an account? Login</p></Link>
-            <p className={styles.error}>Error: {error ? error : 'no error'}</p>
+            <p className={styles.error}>Error: {error}</p>
         </form>
     </div>
 }

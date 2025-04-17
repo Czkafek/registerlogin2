@@ -1,7 +1,8 @@
 import styles from './LoginRegister.module.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import api from '../../scripts/api.js'
 
 function LoginPage() {
 
@@ -34,9 +35,23 @@ function LoginPage() {
             //navigate('/protected');
         } catch (err) {
             console.log(err);
-            setError(error);
+            setError(err.response.data.err);
         }
     }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await api.get("/login", {}, {withCredentials: true});
+                console.log(response);
+                //navigate('/protected')
+            } catch (err) {
+                console.log(err);
+                setError(err.response.data.err);
+            }
+        }
+        fetchData();
+    }, []);
 
     return <div className={styles.container}>
         <h1>Login</h1>
@@ -47,7 +62,7 @@ function LoginPage() {
             <input type="text" placeholder='Password' name='password' value={formData.password} onChange={handleChange} />
             <button>Login</button>
             <Link to='/register'><p className={styles.question}>Don't have account yet? Register</p></Link>
-            <p className={styles.error}>Error: {error ? error : 'no error'}</p>
+            { error && <p className={styles.error}>{error}</p>}
         </form>
     </div>
 }

@@ -32,7 +32,7 @@ function LoginPage() {
             }, {withCredentials: true});
             console.log(response);
             localStorage.setItem("accessToken", response.data.accessToken)
-            //navigate('/protected');
+            navigate('/protected');
         } catch (err) {
             console.log(err);
             setError(err.response.data.err);
@@ -44,7 +44,7 @@ function LoginPage() {
             try {
                 const response = await api.get("/login", {}, {withCredentials: true});
                 console.log(response);
-                //navigate('/protected')
+                navigate('/protected')
             } catch (err) {
                 console.log(err);
                 setError(err.response.data.err);

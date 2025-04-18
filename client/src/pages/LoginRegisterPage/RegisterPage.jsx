@@ -20,7 +20,7 @@ function RegisterPage() {
             try {
                 const response = await api.get("/register")
                 console.log(response);
-                //navigate('/protected')
+                navigate('/protected')
             } catch (err) {
                 console.log(err);
                 setError(err.response.data.err);
@@ -37,7 +37,7 @@ function RegisterPage() {
                 password: formData.password
             });
             console.log(response);
-            //navigate('/protected');
+            navigate('/protected');
         } catch (err) {
             console.log(err);
             setError(err.response.data.err);

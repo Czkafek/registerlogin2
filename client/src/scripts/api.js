@@ -40,6 +40,8 @@ api.interceptors.request.use(async config => {
     }
     else {
         try {
+                console.log("Hej");
+                console.log(token);
                 const accessToken = 'Bearer ' + token;
                 config.headers['Authorization'] = accessToken;
         } catch (err) {
